@@ -8,8 +8,6 @@ pipeline {
           sh 'mvn test'
        }
      }
-   }
-   stages {
       stage ('Build') {
         steps {
            sh 'mvn package'
