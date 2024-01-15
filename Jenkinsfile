@@ -1,5 +1,7 @@
 pipeline {
-  agent any
+  agent {
+    label 'docker-agent-maven-17'
+  }
    stages {
      stage('Stage 1') {
        steps {
