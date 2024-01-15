@@ -3,10 +3,16 @@ pipeline {
     label 'docker-agent-maven-17'
   }
    stages {
-     stage('Stage 1') {
+     stage('test') {
        steps {
-         echo 'Hello world!'
+          sh 'mvn test'
        }
      }
+   }
+   stages {
+       stage ('Build') {
+         steps {
+           sh 'mvn package'
+      }
    }
 }
