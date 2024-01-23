@@ -24,7 +24,7 @@ pipeline {
 	    agent any
             steps {
                 script {
-                    docker.withRegistry('registry-1.docker.io','DOCKER_REGISTRY_CREDENTIALS'){
+                    docker.withRegistry('https://registry.hub.docker.com/v2/','DOCKER_REGISTRY_CREDENTIALS'){
                         docker.image("aniscoprog/repoprivate:${TAG}").push()
                         docker.image("aniscoprog/repoprivate:${TAG}").push("latest")
                     }
