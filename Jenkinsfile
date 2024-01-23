@@ -3,6 +3,10 @@ pipeline {
         label 'docker-agent-maven-17'
     }
     environment {
+        DOCKER_REGISTRY_CREDENTIALS = credentials('DOCKER_REGISTRY_CREDENTIALS')
+        SERVER_USER = credentials('SERVER_USER')
+        SERVER_HOST = credentials('SERVER_HOST')
+        SSH_PORT = credentials('SSH_PORT')
         DATE = new Date().format('yy.M')
         TAG = "${DATE}.${BUILD_NUMBER}"
     }
@@ -34,9 +38,11 @@ pipeline {
         stage('Deploy'){
         agent any
             steps {
-                sh "docker stop repoprivate | true"
-                sh "docker rm repoprivate | true"
-                sh "docker run --name repoprivate -d -p 9004:8080 aniscoprog/repoprivate:${TAG}"
+                steps {
+                   sshagent(credentials: ['VAGRANT_SSH_CREDENTIALS']){
+                      sh 'chmod +x ci-cd/deploy'
+                      sh 'bash ci-cd/deploy'
+                }
             }
         }
     }
