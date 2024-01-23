@@ -1,43 +1,40 @@
 pipeline {
-  agent {
-    label 'docker-agent-maven-17'
-  }
-  environment {
-    DOCKER_ACCESS = credentials("DOCKER_ACCESS_PERMISSIONS_CREDENTIALS")
-  }
-  stages {
-    stage('Dependency') {
-      steps {
-        sh 'mvn dependency:resolve'
-      }
+    agent {
+        label 'docker-agent-maven-17'
     }
-    stage('Test') {
-      steps {
-        sh 'mvn test'
-      }
+    environment {
+        DATE = new Date().format('yy.M')
+        TAG = "${DATE}.${BUILD_NUMBER}"
     }
-    stage('Build App') {
-      steps {
-         sh "mvn package"
-         }
-      }
-    stage('Release App') {
-      steps {
-        script {
-          env.IMAGE_NAME = sh(script: 'echo repoprivate:first', returnStdout: true).trim()
+    stages {
+        stage ('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
         }
-        sh 'chmod +x ci-cd/build_&_release'
-        sh 'bash ci-cd/build_&_release'
-      }
-    }
-    stage('Deploy App') {
-      agent any
-      steps {
-        sshagent(credentials: ['VAGRANT_SSH_CREDENTIALS']) {
-          sh 'chmod +x ci-cd/deploy'
-          sh 'bash ci-cd/deploy'
+        stage('Docker Build') {
+            steps {
+                script {
+                    docker.build("aniscoprog/repoprivate:${TAG}")
+                }
+            }
         }
-      }
+	    stage('Pushing Docker Image to Dockerhub') {
+            steps {
+                script {
+                    docker.withRegistry('https://hub.docker.com/', 'DOCKER_REGISTRY_CREDENTIALS'){
+                        docker.image("aniscoprog/repoprivate:${TAG}").push()
+                        docker.image("aniscoprog/repoprivate:${TAG}").push("latest")
+                    }
+                }
+            }
+        }
+        stage('Deploy'){
+            steps {
+                sh "docker stop repoprivate | true"
+                sh "docker rm repoprivate | true"
+                sh "docker run --name repoprivate -d -p 9004:8080 aniscoprog/repoprivate:${TAG}"
+            }
+        }
     }
-  }
 }
