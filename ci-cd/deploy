@@ -5,4 +5,4 @@ chmod 700 ~/.ssh
 ssh-keyscan "$SERVER_HOST" >>~/.ssh/known_hosts
 chmod 644 ~/.ssh/known_hosts
 
-ssh -i ~/.ssh/id_rsa -p "$SSH_PORT" -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_HOST" bash deploy \
+ssh -p "$SSH_PORT" -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_HOST" bash deploy \
