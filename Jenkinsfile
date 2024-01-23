@@ -39,10 +39,11 @@ pipeline {
         stage('Deploy') {
             agent any
             steps {
-                sshagent(credentials: ['VAGRANT_SSH_CREDENTIALS']) {
-                    sh 'chmod +x ci-cd/deploy'
-                    sh 'bash ci-cd/deploy'
-                }
+              sh 'vagrant ssh'
+//                 sshagent(credentials: ['VAGRANT_SSH_CREDENTIALS']) {
+//                     sh 'chmod +x ci-cd/deploy'
+//                     sh 'bash ci-cd/deploy'
+//                 }
             }
         }
     }
