@@ -4,6 +4,11 @@ pipeline {
     }
     environment {
         DOCKER_REGISTRY_CREDENTIALS = credentials('DOCKER_REGISTRY_CREDENTIALS')
+        SERVER_USER = credentials('SERVER_USER')
+        SERVER_HOST = credentials('SERVER_HOST')
+        SSH_PORT = credentials('SSH_PORT')
+        DATE = new Date().format('yy.M')
+        TAG = "${DATE}.${BUILD_NUMBER}"
     }
     stages {
         stage('Build') {
