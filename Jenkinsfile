@@ -21,6 +21,7 @@ pipeline {
             }
         }
 	    stage('Pushing Docker Image to Dockerhub') {
+	    agent any
             steps {
                 script {
                     docker.withRegistry('https://hub.docker.com/', 'DOCKER_REGISTRY_CREDENTIALS'){
@@ -31,6 +32,7 @@ pipeline {
             }
         }
         stage('Deploy'){
+        agent any
             steps {
                 sh "docker stop repoprivate | true"
                 sh "docker rm repoprivate | true"
